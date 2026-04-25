@@ -1,0 +1,45 @@
+---
+- name: Register Fish shell in /etc/shells
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/shells
+    line: "{{ fish_bin_path }}"
+
+- name: Set Fish as the default shell
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    shell: "{{ fish_bin_path }}"
+  when: ansible_facts.user_shell != fish_bin_path
+
+- name: Ensure Fish config directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/fish"
+    state: directory
+    mode: '0755'
+
+- name: Install Fisher plugin manager
+  ansible.builtin.shell:
+    cmd: >
+      curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish
+      | source && fisher install jorgebucaran/fisher
+    executable: "{{ fish_bin_path }}"
+    creates: "{{ ansible_env.HOME }}/.config/fish/functions/fisher.fish"
+
+- name: List installed Fish plugins
+  ansible.builtin.shell:
+    cmd: fisher list
+    executable: "{{ fish_bin_path }}"
+  register: installed_fish_plugins
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Install Fish plugins
+  ansible.builtin.shell:
+    cmd: fisher install {{ item }}
+    executable: "{{ fish_bin_path }}"
+  loop: "{{ fish_plugins }}"
+  when: item not in (installed_fish_plugins.stdout_lines | default([]))
+  changed_when: "'Installing' in fish_plugin_result.stdout"
+  register: fish_plugin_result

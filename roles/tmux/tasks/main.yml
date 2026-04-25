@@ -1,0 +1,13 @@
+---
+- name: Check if tmux is installed
+  ansible.builtin.stat:
+    path: "{{ homebrew_brew_bin_path | dirname }}/tmux"
+  register: tmux_binary
+
+- name: Install tmux plugin manager (TPM)
+  ansible.builtin.git:
+    repo: https://github.com/tmux-plugins/tpm.git
+    dest: "{{ ansible_env.HOME }}/.config/tmux/plugins/tpm"
+    version: master
+    update: true
+  when: tmux_binary.stat.exists

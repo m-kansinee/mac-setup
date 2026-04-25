@@ -1,0 +1,136 @@
+---
+# MacBook Bootstrap Variables
+
+# Homebrew Configuration
+homebrew_brew_bin_path: /opt/homebrew/bin/brew
+homebrew_taps: []
+
+homebrew_formulae:
+  - mas           # Mac App Store CLI
+  - bat           # Enhanced cat
+  - btop          # Resource monitor
+  - cowsay        # Fun CLI
+  - curl          # Data transfer
+  - doggo         # DNS client
+  - eza           # Modern ls
+  - fd            # Fast find
+  - fzf           # Fuzzy finder
+  - glow          # Markdown viewer
+  - jq            # JSON processor
+  - mole          # macOS deep clean toolkit
+  - pet           # Snippet manager
+  - ripgrep       # Fast search
+  - starship      # Customize prompt
+  - tree-sitter   # Incremental parsing
+  - wget          # Downloader
+  - zoxide        # Smart cd
+  - dockutil      # Dock item manager
+  #- tart         # macOS Virtualization
+  - chezmoi       # Dotfiles manager
+  - cmake         # Build tool
+  - direnv        # Env manager
+  - docker        # Containerization
+  - entr          # File watcher
+  - fnm           # Node version manager
+  - gh            # GitHub CLI
+  - ghq           # Repo manager
+  - git           # Version control
+  - git-delta     # Better diffs
+  - httpie        # Human-friendly HTTP client
+  - lazydocker    # Docker TUI
+  - lazygit       # Git TUI
+  - lf            # File manager
+  - npm           # Node package manager
+  - pandoc        # Doc converter
+  - readline      # Command line editing
+  - ssh-copy-id   # SSH key helper
+  - tmux          # Terminal multiplexer
+  - uv            # Python package manager
+  - fish          # Fish shell
+  - luajit        # Lua JIT
+  - lua-language-server # Lua LSP
+  - neovim        # Text editor
+  - yt-dlp        # Feature-rich cmd audio/video downloader
+  - latexindent   # LaTeX formatter
+  - gemini-cli    # Gemini CLI toolkit
+  - opencode      # Open-source AI coding assistant
+
+homebrew_casks:
+  - anki          # Spaced repetition
+  - appcleaner    # App uninstaller
+  - brave-browser # Privacy browser
+  - firefox       # Browser
+  - google-chrome # Browser
+  - jordanbaird-ice # Menu bar manager (Ice)
+  - keepingyouawake # Keeping mac awake
+  - keycastr      # Keystroke visualizer
+  - obsidian      # Knowledge base
+  #- slack        # Communication
+  - spotify       # Music
+  - vlc           # Media player
+  - wezterm       # GPU-accelerated terminal
+  - font-hack-nerd-font
+  - font-fira-code-nerd-font
+  - basictex      # LaTeX distribution
+  - docker-desktop # Docker GUI
+  - github        # GitHub Desktop
+  - visual-studio-code # IDE
+  - chatgpt       # ChatGPT Desktop
+  - claude        # Claude Desktop
+  - claude-code   # Claude Code Desktop
+  - codex         # Codex for AI assisted coding
+
+# Mac App Store Apps
+mas_apps: []
+
+# Dotfiles Configuration
+dotfiles_repo: "https://github.com/m-kansinee/dotfiles.git"
+
+# Fish Configuration
+fish_plugins:
+  - patrickf1/colored_man_pages.fish
+  - patrickf1/fzf.fish
+
+# VS Code Extensions
+vscode_extensions:
+  # --- AI / Agentic Workflow ---
+  #- anthropic.claude-code              # Claude Code
+  - saoudrizwan.claude-dev              # Cline: Advanced AI agent for autonomous coding & terminal tasks
+  #- github.copilot                     # GitHub Copilot
+
+  # --- Core Quality & DX ---
+  - dbaeumer.vscode-eslint              # ESLint
+  - esbenp.prettier-vscode              # Prettier
+  - usernamehw.errorlens                # ErrorLens
+  - eamodio.gitlens                     # GitLens
+
+  # --- UI / DX ---
+  - pkief.material-icon-theme           # Material Icon Theme
+  - gruntfuggly.todo-tree               # TODO Tree
+
+  # --- Python ---
+  - ms-python.python                    # Python
+  - ms-python.vscode-pylance            # Pylance
+  #- ms-python.debugpy                  # Debugpy
+
+  # --- Frontend ---
+  - bradlc.vscode-tailwindcss           # Tailwind CSS
+
+  # --- Infrastructure ---
+  - ms-azuretools.vscode-docker         # Docker
+  - ms-vscode-remote.remote-containers  # Dev Containers
+  - redhat.vscode-yaml                  # YAML
+
+  # --- API & Database ---
+  - humao.rest-client                   # REST Client
+  - cweijan.vscode-mysql-client2        # Database Client
+
+  # --- Node.js / TypeScript ---
+  - ms-vscode.vscode-typescript-next    # TS Nightly
+
+  # --- Markdown ---
+  - shd101wyy.markdown-preview-enhanced # Markdown Preview Enhanced
+
+# System Configuration
+osx_computer_name: "TODO"
+osx_screenshots_dir: "{{ ansible_env.HOME }}/Pictures/Screenshots"

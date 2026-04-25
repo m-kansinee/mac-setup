@@ -1,0 +1,21 @@
+---
+terminal_font_name: "Hack Nerd Font Mono"
+terminal_font_size: 13
+
+dock_remove_apps:
+  - Mail
+  - Phone
+  - Contacts
+  - Reminders
+  - TV
+  - Music
+  - Games
+  - App Store
+  - iPhone Mirroring
+  - Maps
+  - Photos
+  - FaceTime
+
+dock_add_apps:
+  - name: WezTerm
+    path: /Applications/WezTerm.app

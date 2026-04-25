@@ -1,0 +1,34 @@
+---
+- name: Check if chezmoi source directory exists
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/share/chezmoi"
+  register: chezmoi_source_dir
+
+- name: Initialize chezmoi and apply dotfiles
+  ansible.builtin.command:
+    cmd: "chezmoi init --apply --force {{ dotfiles_repo }}"
+  when: not chezmoi_source_dir.stat.exists
+  changed_when: true
+
+- name: Detect default branch of dotfiles remote
+  ansible.builtin.shell:
+    cmd: git -C "{{ ansible_env.HOME }}/.local/share/chezmoi" remote show origin | awk '/HEAD branch/ {print $NF}'
+  register: dotfiles_remote_branch
+  changed_when: false
+  check_mode: false
+  when: chezmoi_source_dir.stat.exists
+
+- name: Sync chezmoi source to origin/{{ dotfiles_remote_branch.stdout | trim | default(dotfiles_branch) }}
+  ansible.builtin.git:
+    repo: "{{ dotfiles_repo }}"
+    dest: "{{ ansible_env.HOME }}/.local/share/chezmoi"
+    version: "{{ dotfiles_remote_branch.stdout | trim | default(dotfiles_branch) }}"
+    force: true
+  when: chezmoi_source_dir.stat.exists
+
+- name: Apply dotfiles via chezmoi
+  ansible.builtin.command:
+    cmd: chezmoi apply --force --no-tty
+  when: chezmoi_source_dir.stat.exists
+  register: chezmoi_apply
+  changed_when: chezmoi_apply.stdout | length > 0

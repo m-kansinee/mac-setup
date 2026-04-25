@@ -1,0 +1,243 @@
+---
+###############################################################################
+# System & Keyboard                                                           #
+###############################################################################
+
+- name: Get current ComputerName
+  ansible.builtin.command: scutil --get ComputerName
+  register: current_computer_name
+  changed_when: false
+  failed_when: false
+
+- name: Set computer name (ComputerName, HostName, LocalHostName)
+  become: true
+  ansible.builtin.command: "scutil --set {{ item }} {{ osx_computer_name }}"
+  loop:
+    - ComputerName
+    - HostName
+    - LocalHostName
+  when: current_computer_name.stdout != osx_computer_name
+  changed_when: true
+
+- name: Apply Global Domain settings
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { key: "NSAutomaticSpellingCorrectionEnabled",  type: "bool",  value: false }
+    - { key: "NSAutomaticQuoteSubstitutionEnabled",   type: "bool",  value: false }
+    - { key: "NSAutomaticDashSubstitutionEnabled",    type: "bool",  value: false }
+    - { key: "NSAutomaticCapitalizationEnabled",      type: "bool",  value: false }
+    - { key: "ApplePressAndHoldEnabled",              type: "bool",  value: false }
+    - { key: "KeyRepeat",                             type: "int",   value: 1     }
+    - { key: "InitialKeyRepeat",                      type: "int",   value: 20    }
+    - { key: "AppleShowAllExtensions",                type: "bool",  value: true  }
+    - { key: "com.apple.springing.enabled",           type: "bool",  value: true  }
+    - { key: "com.apple.springing.delay",             type: "float", value: 0.1   }
+    - { key: "WebKitDeveloperExtras",                 type: "bool",  value: true  }
+
+###############################################################################
+# Dock                                                                        #
+###############################################################################
+
+- name: Remove apps from Dock
+  ansible.builtin.command: "dockutil --remove '{{ item }}' --no-restart"
+  loop: "{{ dock_remove_apps }}"
+  register: dock_remove_result
+  failed_when: false
+  changed_when: dock_remove_result.rc == 0
+  notify: Restart Dock
+
+- name: Check which configured apps are already in Dock
+  ansible.builtin.command: "dockutil --find {{ item.name }}"
+  loop: "{{ dock_add_apps }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: dock_find
+  failed_when: false
+  changed_when: false
+
+- name: Add missing apps to Dock
+  ansible.builtin.command: "dockutil --add {{ item.item.path }} --position last --no-restart"
+  loop: "{{ dock_find.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  when: item.rc != 0
+  failed_when: false
+  changed_when: true
+  notify: Restart Dock
+
+- name: Apply Dock settings
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { key: "tilesize",                   type: "int",   value: 23   }
+    - { key: "show-recents",               type: "bool",  value: false }
+    - { key: "expose-animation-duration",  type: "float", value: 0.15 }
+    - { key: "autohide",                   type: "bool",  value: true  }
+  notify: Restart Dock
+
+- name: Set click wallpaper to show desktop to "Only in Stage Manager"
+  community.general.osx_defaults:
+    domain: com.apple.WindowManager
+    key: EnableStandardClickToShowDesktop
+    type: bool
+    value: false
+    state: present
+
+###############################################################################
+# Screen & Screenshots                                                        #
+###############################################################################
+
+- name: Create screenshot directory
+  ansible.builtin.file:
+    path: "{{ osx_screenshots_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Apply screenshot settings
+  community.general.osx_defaults:
+    domain: com.apple.screencapture
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { key: "location",        type: "string", value: "{{ osx_screenshots_dir }}" }
+    - { key: "type",            type: "string", value: "png"                        }
+    - { key: "disable-shadow",  type: "bool",   value: true                         }
+
+###############################################################################
+# Finder                                                                      #
+###############################################################################
+
+- name: Apply Finder settings
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { key: "QuitMenuItem",                  type: "bool",   value: true                                      }
+    - { key: "NewWindowTarget",               type: "string", value: "PfLo"                                    }
+    - { key: "NewWindowTargetPath",           type: "string", value: "file://{{ ansible_env.HOME }}/"          }
+    - { key: "ShowExternalHardDrivesOnDesktop", type: "bool", value: true                                      }
+    - { key: "ShowHardDrivesOnDesktop",       type: "bool",   value: true                                      }
+    - { key: "ShowMountedServersOnDesktop",   type: "bool",   value: true                                      }
+    - { key: "ShowRemovableMediaOnDesktop",   type: "bool",   value: true                                      }
+    - { key: "ShowStatusBar",                 type: "bool",   value: true                                      }
+    - { key: "QLEnableTextSelection",         type: "bool",   value: true                                      }
+    - { key: "FXDefaultSearchScope",          type: "string", value: "SCcf"                                    }
+    - { key: "FXEnableExtensionChangeWarning", type: "bool",  value: false                                     }
+    - { key: "FXPreferredViewStyle",          type: "string", value: "clmv"                                    }
+
+- name: Disable .DS_Store creation on network and USB volumes
+  community.general.osx_defaults:
+    domain: com.apple.desktopservices
+    key: "{{ item }}"
+    type: bool
+    value: true
+    state: present
+  loop:
+    - DSDontWriteNetworkStores
+    - DSDontWriteUSBStores
+
+- name: Unhide ~/Library folder
+  ansible.builtin.command: "chflags nohidden {{ ansible_env.HOME }}/Library"
+  changed_when: false
+
+###############################################################################
+# Safari, Mail, Activity Monitor, Photos                                      #
+###############################################################################
+
+- name: Apply Safari developer settings
+  community.general.osx_defaults:
+    domain: com.apple.Safari
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { key: "SendDoNotTrackHTTPHeader",                                                          type: "bool", value: true }
+    - { key: "IncludeDevelopMenu",                                                                type: "bool", value: true }
+    - { key: "WebKitDeveloperExtrasEnabledPreferenceKey",                                         type: "bool", value: true }
+    - { key: "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled",         type: "bool", value: true }
+
+- name: Apply Mail settings
+  community.general.osx_defaults:
+    domain: com.apple.mail
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { key: "AddressesIncludeNameOnPasteboard",  type: "bool", value: false }
+    - { key: "DisableInlineAttachmentViewing",     type: "bool", value: true  }
+
+- name: Apply Activity Monitor settings
+  community.general.osx_defaults:
+    domain: com.apple.ActivityMonitor
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { key: "OpenMainWindow",  type: "bool", value: true }
+    - { key: "ShowCategory",    type: "int",  value: 0    }
+
+- name: Prevent Photos from opening automatically on device connect
+  community.general.osx_defaults:
+    domain: com.apple.ImageCapture
+    key: disableHotPlug
+    type: bool
+    value: true
+    state: present
+    host: current
+
+- name: Enable Dark Mode for current user
+  community.general.osx_defaults:
+    domain: "{{ ansible_env.HOME }}/Library/Preferences/.GlobalPreferences"
+    key: AppleInterfaceStyle
+    type: string
+    value: Dark
+    state: present
+
+###############################################################################
+# Terminal                                                                    #
+###############################################################################
+
+- name: Get current Terminal default font name
+  ansible.builtin.shell: |
+    osascript -e 'tell application "Terminal" to get font name of default settings'
+  register: current_terminal_font_name
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Set Terminal default font name
+  ansible.builtin.shell: |
+    osascript -e 'tell application "Terminal" to set font name of default settings to "{{ terminal_font_name }}"'
+  when: current_terminal_font_name.stdout | trim != terminal_font_name
+  changed_when: true
+
+- name: Get current Terminal default font size
+  ansible.builtin.shell: |
+    osascript -e 'tell application "Terminal" to get font size of default settings'
+  register: current_terminal_font_size
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Set Terminal default font size
+  ansible.builtin.shell: |
+    osascript -e 'tell application "Terminal" to set font size of default settings to {{ terminal_font_size }}'
+  when: current_terminal_font_size.stdout | trim | int != terminal_font_size
+  changed_when: true

@@ -1,0 +1,36 @@
+---
+- name: Bootstrap MacBook Apple Silicon
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  pre_tasks:
+    - name: Prompt for computer name
+      ansible.builtin.pause:
+        prompt: "Enter a computer name (e.g., my-macbook)"
+      register: computer_name_input
+      when: osx_computer_name == "TODO"
+
+    - name: Persist computer name to group_vars
+      ansible.builtin.lineinfile:
+        path: "{{ playbook_dir }}/group_vars/all.yml"
+        regexp: '^osx_computer_name:.*'
+        line: 'osx_computer_name: "{{ computer_name_input.user_input }}"'
+      when:
+        - osx_computer_name == "TODO"
+        - computer_name_input.user_input | default("") | length > 0
+
+    - name: Reload group_vars after computer name update
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/group_vars/all.yml"
+      when:
+        - computer_name_input is defined
+        - computer_name_input.user_input | default("") | length > 0
+
+  roles:
+    - role: homebrew
+    - role: dotfiles
+    - role: fish
+    - role: system
+    - role: vscode
+    - role: tmux
