@@ -11,14 +11,12 @@ homebrew_formulae:
   - btop          # Resource monitor
   - cowsay        # Fun CLI
   - curl          # Data transfer
-  - doggo         # DNS client
   - eza           # Modern ls
   - fd            # Fast find
   - fzf           # Fuzzy finder
   - glow          # Markdown viewer
   - jq            # JSON processor
   - mole          # macOS deep clean toolkit
-  - pet           # Snippet manager
   - ripgrep       # Fast search
   - starship      # Customize prompt
   - tree-sitter   # Incremental parsing
@@ -40,8 +38,6 @@ homebrew_formulae:
   - lazydocker    # Docker TUI
   - lazygit       # Git TUI
   - lf            # File manager
-  - npm           # Node package manager
-  - pandoc        # Doc converter
   - readline      # Command line editing
   - ssh-copy-id   # SSH key helper
   - tmux          # Terminal multiplexer
@@ -51,7 +47,6 @@ homebrew_formulae:
   - lua-language-server # Lua LSP
   - neovim        # Text editor
   - yt-dlp        # Feature-rich cmd audio/video downloader
-  - latexindent   # LaTeX formatter
   - gemini-cli    # Gemini CLI toolkit
   - opencode      # Open-source AI coding assistant
 
@@ -63,15 +58,12 @@ homebrew_casks:
   - google-chrome # Browser
   - jordanbaird-ice # Menu bar manager (Ice)
   - keepingyouawake # Keeping mac awake
-  - keycastr      # Keystroke visualizer
   - obsidian      # Knowledge base
-  #- slack        # Communication
   - spotify       # Music
   - vlc           # Media player
   - wezterm       # GPU-accelerated terminal
   - font-hack-nerd-font
   - font-fira-code-nerd-font
-  - basictex      # LaTeX distribution
   - docker-desktop # Docker GUI
   - github        # GitHub Desktop
   - visual-studio-code # IDE
