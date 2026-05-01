@@ -64,6 +64,8 @@ homebrew_casks:
   - wezterm       # GPU-accelerated terminal
   - font-hack-nerd-font
   - font-fira-code-nerd-font
+  - font-noto-sans-thai
+  - font-noto-sans-thai-looped
   - docker-desktop # Docker GUI
   - github        # GitHub Desktop
   - visual-studio-code # IDE
@@ -71,6 +73,7 @@ homebrew_casks:
   - claude        # Claude Desktop
   - claude-code   # Claude Code Desktop
   - codex         # Codex for AI assisted coding
+  - codex-app     # Codex for AI assisted coding
 
 # Mac App Store Apps
 mas_apps: []
