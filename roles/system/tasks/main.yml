@@ -158,19 +158,6 @@
 # Safari, Mail, Activity Monitor, Photos                                      #
 ###############################################################################
 
-- name: Apply Safari developer settings
-  community.general.osx_defaults:
-    domain: com.apple.Safari
-    key: "{{ item.key }}"
-    type: "{{ item.type }}"
-    value: "{{ item.value }}"
-    state: present
-  loop:
-    - { key: "SendDoNotTrackHTTPHeader",                                                          type: "bool", value: true }
-    - { key: "IncludeDevelopMenu",                                                                type: "bool", value: true }
-    - { key: "WebKitDeveloperExtrasEnabledPreferenceKey",                                         type: "bool", value: true }
-    - { key: "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled",         type: "bool", value: true }
-
 - name: Apply Mail settings
   community.general.osx_defaults:
     domain: com.apple.mail
