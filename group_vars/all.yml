@@ -56,7 +56,7 @@ homebrew_casks:
   - brave-browser # Privacy browser
   - firefox       # Browser
   - google-chrome # Browser
-  - jordanbaird-ice # Menu bar manager (Ice)
+  - jordanbaird-ice@beta # Menu bar manager (Ice)
   - keepingyouawake # Keeping mac awake
   - obsidian      # Knowledge base
   - spotify       # Music
@@ -127,5 +127,5 @@ vscode_extensions:
   - shd101wyy.markdown-preview-enhanced # Markdown Preview Enhanced
 
 # System Configuration
-osx_computer_name: "TODO"
+osx_computer_name: "kan-neo"
 osx_screenshots_dir: "{{ ansible_env.HOME }}/Pictures/Screenshots"
