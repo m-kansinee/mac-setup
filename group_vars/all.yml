@@ -68,6 +68,7 @@ homebrew_casks:
   - font-noto-sans-thai-looped
   - docker-desktop # Docker GUI
   - github        # GitHub Desktop
+  - ghostty       # Terminal
   - visual-studio-code # IDE
   - chatgpt       # ChatGPT Desktop
   - claude        # Claude Desktop
